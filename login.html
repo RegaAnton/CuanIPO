@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Login - CuanIPO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class", theme: { extend: {} } };
+    </script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body
+    class="bg-slate-50 dark:bg-slate-900 font-sans antialiased flex flex-col min-h-screen justify-center transition-colors"
+  >
+    <div class="max-w-md w-full mx-auto px-4">
+      <div class="text-center mb-8">
+        <div class="flex items-center justify-center gap-2 mb-4">
+          <i
+            class="fas fa-rocket text-3xl text-indigo-600 dark:text-indigo-400"
+          ></i>
+          <span
+            class="font-bold text-2xl tracking-wider text-slate-800 dark:text-white"
+            >CuanIPO</span
+          >
+        </div>
+      </div>
+
+      <div
+        class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700"
+      >
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-black text-slate-800 dark:text-white">
+            Selamat Datang!
+          </h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+            Silakan login untuk mengakses portofolio Anda.
+          </p>
+        </div>
+
+        <form id="loginForm" class="space-y-5">
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+              >Username</label
+            >
+            <input
+              type="text"
+              id="authUsername"
+              required
+              class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-4 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="Masukkan username"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+              >Password</label
+            >
+            <input
+              type="password"
+              id="authPassword"
+              required
+              class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-4 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="submit"
+            id="btnLoginSubmit"
+            class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:bg-indigo-700 active:scale-[0.98] transition-all"
+          >
+            Login
+          </button>
+        </form>
+
+        <div
+          class="mt-6 text-center text-sm text-slate-500 dark:text-slate-400"
+        >
+          Belum punya akun?
+          <a
+            href="register.html"
+            class="font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+            >Daftar sekarang</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="toast-container"
+      class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"
+    ></div>
+
+    <script src="auth.js"></script>
+  </body>
+</html>

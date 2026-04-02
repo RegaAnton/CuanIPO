@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="id" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Dashboard - CuanIPO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class", theme: { extend: {} } };
+    </script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body
+    class="bg-slate-50 dark:bg-slate-900 font-sans antialiased text-slate-800 dark:text-slate-100 transition-colors duration-300 overflow-x-hidden w-full relative"
+  >
+    <nav
+      class="bg-indigo-600 dark:bg-indigo-900 text-white shadow-md sticky top-0 z-40 transition-colors w-full"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-rocket text-2xl"></i>
+            <span class="font-bold text-xl tracking-wider">CuanIPO</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div
+              id="userProfile"
+              class="hidden text-xs sm:text-sm font-medium bg-indigo-700 dark:bg-indigo-950 px-3 py-1.5 rounded-full items-center shadow-inner gap-2"
+            >
+              <i class="fas fa-user-circle text-indigo-300"></i>
+              <span id="displayUsername" class="font-bold"></span>
+              <button
+                onclick="IPOApp.logout()"
+                class="ml-2 text-rose-300 hover:text-rose-400"
+                title="Logout"
+              >
+                <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
+
+            <button
+              onclick="IPOApp.toggleTheme()"
+              id="themeToggle"
+              class="p-2 rounded-full bg-indigo-700 dark:bg-indigo-950 hover:bg-indigo-800 transition-colors focus:outline-none w-9 h-9 flex items-center justify-center"
+            >
+              <i class="fas fa-moon text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main
+      id="mainApp"
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full"
+    >
+      <div
+        id="api-warning"
+        class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-200 p-4 mb-6 rounded shadow-sm hidden"
+      >
+        <p class="font-bold text-sm sm:text-base">
+          <i class="fas fa-exclamation-triangle mr-2"></i>Langkah Terakhir!
+        </p>
+        <p class="text-xs sm:text-sm mt-1">
+          Silakan masukkan URL API Anda di bagian Javascript file app.js.
+        </p>
+      </div>
+
+      <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 w-full"
+      >
+        <h2
+          class="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100"
+        >
+          <i class="fas fa-chart-pie mr-2 text-indigo-500"></i>Dashboard
+          Analitik
+        </h2>
+        <div
+          class="flex bg-slate-200 dark:bg-slate-800 rounded-lg p-1 w-full md:w-auto overflow-x-auto hide-scrollbar transition-colors"
+          id="dateFilters"
+        >
+          <button
+            onclick="IPOApp.setFilter('1M')"
+            id="filter-1M"
+            class="flex-1 md:flex-none px-4 py-2 sm:py-1.5 text-xs sm:text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-800 transition-colors"
+          >
+            1 Bulan
+          </button>
+          <button
+            onclick="IPOApp.setFilter('3M')"
+            id="filter-3M"
+            class="flex-1 md:flex-none px-4 py-2 sm:py-1.5 text-xs sm:text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-800 transition-colors"
+          >
+            3 Bulan
+          </button>
+          <button
+            onclick="IPOApp.setFilter('YTD')"
+            id="filter-YTD"
+            class="flex-1 md:flex-none px-4 py-2 sm:py-1.5 text-xs sm:text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-800 transition-colors"
+          >
+            YTD
+          </button>
+          <button
+            onclick="IPOApp.setFilter('ALL')"
+            id="filter-ALL"
+            class="flex-1 md:flex-none px-4 py-2 sm:py-1.5 text-xs sm:text-sm font-bold rounded-md bg-white dark:bg-slate-600 text-slate-800 dark:text-white shadow-sm transition-colors"
+          >
+            Semua
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 w-full">
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 border-t-4 border-blue-500"
+        >
+          <h3
+            class="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase mb-1"
+          >
+            Total Saham
+          </h3>
+          <p
+            id="dash-count"
+            class="text-lg sm:text-xl font-black text-slate-800 dark:text-white"
+          >
+            0 IPO
+          </p>
+        </div>
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 border-t-4 border-indigo-500"
+        >
+          <h3
+            class="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase mb-1"
+          >
+            Total Investasi
+          </h3>
+          <p
+            id="dash-investasi"
+            class="text-lg sm:text-xl font-black text-slate-800 dark:text-white truncate"
+          >
+            Rp 0
+          </p>
+        </div>
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 border-t-4 border-amber-500"
+        >
+          <h3
+            class="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase mb-1"
+          >
+            Unrealized (Hold)
+          </h3>
+          <p
+            id="dash-unrealized"
+            class="text-lg sm:text-xl font-black truncate"
+          >
+            Rp 0
+          </p>
+        </div>
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 border-t-4 border-purple-500"
+        >
+          <h3
+            class="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase mb-1"
+          >
+            Realized (Sold)
+          </h3>
+          <p id="dash-realized" class="text-lg sm:text-xl font-black truncate">
+            Rp 0
+          </p>
+        </div>
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 border-t-4 border-emerald-500 relative overflow-hidden"
+        >
+          <h3
+            class="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase mb-1"
+          >
+            Win Rate 🔥
+          </h3>
+          <p
+            id="dash-winrate"
+            class="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400"
+          >
+            0%
+          </p>
+          <i
+            class="fas fa-trophy absolute -right-2 -bottom-2 text-4xl text-emerald-50 dark:text-emerald-900/30"
+          ></i>
+        </div>
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 border-t-4 border-rose-500 relative overflow-hidden"
+        >
+          <h3
+            class="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase mb-1"
+          >
+            Rata-rata P/L
+          </h3>
+          <p
+            id="dash-avgpl"
+            class="text-lg sm:text-xl font-black text-slate-800 dark:text-white"
+          >
+            0%
+          </p>
+          <i
+            class="fas fa-percent absolute -right-2 -bottom-2 text-4xl text-rose-50 dark:text-rose-900/30"
+          ></i>
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8 w-full"
+        id="chartsArea"
+      >
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 sm:p-6 border border-slate-100 dark:border-slate-700"
+        >
+          <h3
+            class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 text-center"
+          >
+            Performa P/L per Saham (Rp)
+          </h3>
+          <div class="relative h-48 sm:h-64 w-full">
+            <canvas id="plBarChart"></canvas>
+          </div>
+        </div>
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 sm:p-6 border border-slate-100 dark:border-slate-700"
+        >
+          <h3
+            class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 text-center"
+          >
+            Alokasi Modal Portofolio
+          </h3>
+          <div class="relative h-48 sm:h-64 w-full flex justify-center">
+            <canvas id="allocationPieChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-transparent md:bg-white md:dark:bg-slate-800 md:rounded-xl md:shadow-sm md:border border-slate-100 dark:border-slate-700 w-full"
+      >
+        <div
+          class="px-0 md:px-6 py-4 md:border-b border-slate-100 dark:border-slate-700 flex flex-col lg:flex-row justify-between items-start lg:items-center bg-transparent md:bg-slate-50/50 md:dark:bg-slate-800/80 gap-4 mb-2 md:mb-0 w-full"
+        >
+          <h2
+            class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center"
+          >
+            <i
+              class="fas fa-list-alt text-indigo-500 dark:text-indigo-400 mr-2"
+            ></i>
+            Daftar Portofolio
+          </h2>
+
+          <div
+            class="flex flex-wrap lg:flex-nowrap gap-2 w-full lg:w-auto items-center"
+          >
+            <div
+              class="relative flex-1 lg:flex-none w-full sm:w-auto min-w-[140px]"
+            >
+              <div
+                class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+              >
+                <i class="fas fa-sort-amount-down text-slate-400 text-xs"></i>
+              </div>
+              <select
+                id="sortSelect"
+                onchange="IPOApp.setSort(this.value)"
+                class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 p-2.5 shadow-sm font-semibold outline-none cursor-pointer"
+              >
+                <option value="newest">Terbaru</option>
+                <option value="oldest">Terlama</option>
+                <option value="pl_high">Cuan Tertinggi</option>
+                <option value="pl_low">Rugi Terdalam</option>
+                <option value="az">Abjad (A-Z)</option>
+              </select>
+            </div>
+
+            <button
+              onclick="IPOApp.fetchData()"
+              class="flex-1 lg:flex-none flex justify-center items-center text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 text-xs sm:text-sm font-bold px-3 py-2.5 rounded-lg transition-colors border border-indigo-100 dark:border-indigo-800 shadow-sm md:shadow-none"
+            >
+              <i class="fas fa-sync-alt"></i>
+            </button>
+
+            <button
+              onclick="IPOApp.openFormModal()"
+              class="flex-[2] lg:flex-none flex justify-center items-center bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-lg transition-colors shadow-sm whitespace-nowrap"
+            >
+              <i class="fas fa-plus mr-1.5"></i> Tambah IPO
+            </button>
+          </div>
+        </div>
+
+        <div class="w-full overflow-hidden">
+          <table class="w-full block md:table">
+            <thead
+              class="bg-slate-50 dark:bg-slate-700/50 hidden md:table-header-group"
+            >
+              <tr>
+                <th
+                  class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase"
+                >
+                  Saham
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase"
+                >
+                  Volume & Modal
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase"
+                >
+                  Harga
+                </th>
+                <th
+                  class="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase"
+                >
+                  P/L (Rp)
+                </th>
+                <th
+                  class="px-6 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-300 uppercase"
+                >
+                  Status & Aksi
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="tableBody"
+              class="w-full block md:table-row-group md:divide-y divide-slate-100 dark:divide-slate-700"
+            >
+              <tr class="block md:table-row w-full">
+                <td
+                  colspan="5"
+                  class="px-6 py-12 text-center text-sm text-slate-500 dark:text-slate-400 block md:table-cell"
+                >
+                  <i
+                    class="fas fa-circle-notch fa-spin text-3xl text-indigo-400 mb-3 block"
+                  ></i>
+                  <p class="font-medium">Memuat data portofolio...</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <div
+      id="formModal"
+      class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 hidden flex items-center justify-center z-50 backdrop-blur-sm transition-opacity overflow-y-auto p-4 sm:p-0"
+    >
+      <div
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg mx-auto overflow-hidden flex flex-col max-h-full border border-transparent dark:border-slate-700 transition-colors"
+      >
+        <div
+          class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800 sticky top-0 z-10"
+        >
+          <h3
+            class="text-lg font-extrabold text-slate-800 dark:text-white flex items-center"
+            id="formModalTitle"
+          >
+            <i
+              class="fas fa-plus-circle text-indigo-500 dark:text-indigo-400 mr-2"
+            ></i
+            >Catat IPO Baru
+          </h3>
+          <button
+            type="button"
+            onclick="IPOApp.closeFormModal()"
+            class="text-slate-400 hover:text-red-500 transition-colors bg-white dark:bg-slate-700 rounded-full p-1.5"
+          >
+            <i
+              class="fas fa-times w-5 h-5 flex items-center justify-center"
+            ></i>
+          </button>
+        </div>
+        <div class="p-6 overflow-y-auto hide-scrollbar">
+          <form id="ipoForm" class="space-y-4 sm:space-y-5">
+            <input type="hidden" id="formId" />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="col-span-2 sm:col-span-1">
+                <label
+                  class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                  >Ticker</label
+                >
+                <input
+                  type="text"
+                  id="ticker"
+                  required
+                  class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-4 py-2.5 border uppercase bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+                  placeholder="GOTO"
+                />
+              </div>
+              <div class="col-span-2 sm:col-span-1">
+                <label
+                  class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                  >Underwriter</label
+                >
+                <input
+                  type="text"
+                  id="underwriter"
+                  class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-4 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+                  placeholder="CP, CC"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                >Nama Perusahaan</label
+              >
+              <input
+                type="text"
+                id="nama"
+                class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-4 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+                placeholder="PT GoTo Gojek Tokopedia Tbk"
+              />
+            </div>
+            <div
+              class="grid grid-cols-2 gap-4 border-t border-slate-100 dark:border-slate-700 pt-4 mt-2"
+            >
+              <div>
+                <label
+                  class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                  >Harga IPO (Rp)</label
+                >
+                <input
+                  type="number"
+                  id="harga_ipo"
+                  required
+                  class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-4 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+                  placeholder="338"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                  >Jumlah Lot</label
+                >
+                <input
+                  type="number"
+                  id="lot_dapat"
+                  required
+                  class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-4 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+                  placeholder="50"
+                />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                  >Tanggal Beli</label
+                >
+                <input
+                  type="date"
+                  id="tanggal_beli"
+                  required
+                  class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-3 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                  >Status</label
+                >
+                <select
+                  id="status_saham"
+                  onchange="IPOApp.toggleSellFields()"
+                  class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-3 py-2.5 border bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-semibold"
+                >
+                  <option value="Hold">HOLD</option>
+                  <option value="Sold">SOLD</option>
+                </select>
+              </div>
+            </div>
+            <div
+              id="sellFields"
+              class="hidden grid-cols-2 gap-4 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-800/50 mt-2"
+            >
+              <div class="col-span-2">
+                <h4
+                  class="text-xs font-black text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-2"
+                >
+                  <i class="fas fa-receipt mr-2"></i> Rincian Penjualan
+                </h4>
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                  >Harga Jual</label
+                >
+                <input
+                  type="number"
+                  id="form_harga_jual"
+                  class="block w-full rounded-lg border-purple-200 dark:border-slate-600 px-4 py-2 border bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                  placeholder="382"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+                  >Tanggal Jual</label
+                >
+                <input
+                  type="date"
+                  id="form_tanggal_jual"
+                  class="block w-full rounded-lg border-purple-200 dark:border-slate-600 px-3 py-2 border bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div
+          class="px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex gap-3 sticky bottom-0 z-10"
+        >
+          <button
+            type="button"
+            onclick="IPOApp.closeFormModal()"
+            class="w-1/3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 py-2.5 rounded-lg hover:bg-slate-50 font-bold text-sm"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            id="btnSubmitForm"
+            onclick="IPOApp.handleSimpanIPO(event)"
+            class="w-2/3 bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-bold text-sm shadow-md active:scale-[0.98]"
+          >
+            <i class="fas fa-save mr-2"></i> Simpan Data
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="sellModal"
+      class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 hidden flex items-center justify-center z-50 backdrop-blur-sm transition-opacity p-4 sm:p-0"
+    >
+      <div
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-sm transform transition-all border border-transparent dark:border-slate-700"
+      >
+        <div
+          class="flex justify-between items-center mb-5 border-b border-slate-100 dark:border-slate-700 pb-4"
+        >
+          <h3
+            class="text-lg font-black text-slate-800 dark:text-white flex items-center"
+          >
+            <i class="fas fa-hand-holding-usd text-indigo-500 mr-2"></i> Jual
+            <span id="sellTicker" class="ml-1 text-indigo-500"></span>
+          </h3>
+          <button
+            type="button"
+            onclick="IPOApp.closeSellModal()"
+            class="text-slate-400 hover:text-red-500 bg-slate-50 dark:bg-slate-700 rounded-full p-1.5"
+          >
+            <i
+              class="fas fa-times w-4 h-4 flex items-center justify-center"
+            ></i>
+          </button>
+        </div>
+        <form id="sellForm" class="space-y-4">
+          <input type="hidden" id="sellId" />
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+              >Tanggal Eksekusi Jual</label
+            >
+            <input
+              type="date"
+              id="sellDate"
+              required
+              class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-3 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1"
+              >Harga Jual (Rp)</label
+            >
+            <input
+              type="number"
+              id="sellPrice"
+              required
+              class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-4 py-2.5 border bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+              placeholder="382"
+            />
+          </div>
+          <div class="flex gap-3 mt-8 pt-2">
+            <button
+              type="button"
+              onclick="IPOApp.closeSellModal()"
+              class="w-1/2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 py-2.5 rounded-lg font-bold text-sm"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              id="btnConfirmSell"
+              class="w-1/2 bg-indigo-600 text-white py-2.5 rounded-lg font-bold text-sm"
+            >
+              <i class="fas fa-check mr-1.5"></i> Jual
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div
+      id="customConfirmModal"
+      class="fixed inset-0 bg-slate-900/70 dark:bg-black/80 hidden flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity p-4 sm:p-0"
+    >
+      <div
+        class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-sm transform transition-all text-center border border-slate-100 dark:border-slate-700"
+      >
+        <div
+          class="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"
+        >
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-800 dark:text-white mb-2">
+          Hapus Data?
+        </h3>
+        <p
+          class="text-sm text-slate-500 dark:text-slate-400 mb-6"
+          id="confirmMessage"
+        >
+          Apakah Anda yakin ingin menghapus data ini?
+        </p>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            onclick="IPOApp.closeConfirm()"
+            class="w-1/2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 py-2.5 rounded-lg font-bold text-sm"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            id="btnConfirmAction"
+            onclick="IPOApp.executeConfirm()"
+            class="w-1/2 bg-rose-600 text-white py-2.5 rounded-lg font-bold text-sm"
+          >
+            Ya, Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="toast-container"
+      class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"
+    ></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
