@@ -16,13 +16,13 @@ Aplikasi web untuk mengelola portfolio IPO dengan dashboard analytics, tracking 
 
 ## 🛠️ Teknologi yang Digunakan
 
-| Aspek | Technology |
-|-------|-----------|
-| **Frontend** | HTML5, CSS3 (Tailwind), Vanilla JavaScript ES6+ |
-| **Visualization** | Chart.js |
-| **Backend** | Google Apps Script |
-| **Database** | Google Sheets |
-| **Architecture** | Modular JavaScript (7 modules) |
+| Aspek             | Technology                                      |
+| ----------------- | ----------------------------------------------- |
+| **Frontend**      | HTML5, CSS3 (Tailwind), Vanilla JavaScript ES6+ |
+| **Visualization** | Chart.js                                        |
+| **Backend**       | Google Apps Script                              |
+| **Database**      | Google Sheets                                   |
+| **Architecture**  | Modular JavaScript (7 modules)                  |
 
 ---
 
@@ -68,11 +68,13 @@ CuanIPO/
 3. Buat dua sheets dengan nama: **"Portfolio"** dan **"Users"**
 
 **Portfolio sheet - Header row:**
+
 ```
 ID | Tanggal Beli | Ticker | Nama Perusahaan | Underwriter | Harga IPO | Lot | Status | Tgl Jual | Harga Jual | Username
 ```
 
 **Users sheet - Header row:**
+
 ```
 Username | Password | Tgl Daftar
 ```
@@ -145,11 +147,11 @@ const CONFIG = {
 
 Tambahkan data dummy untuk test:
 
-| Ticker | Nama | Underwriter | Harga IPO | Lot | Tanggal Beli |
-|--------|------|-------------|-----------|-----|--------------|
-| BBRI | Bank Rakyat Indonesia | CIMB Niaga | 3850 | 10 | 2024-01-15 |
-| MEGA | Bank Mega | Goldman Sachs | 5500 | 5 | 2024-02-01 |
-| INDF | Indofood | BCA Sekuritas | 8000 | 8 | 2024-02-10 |
+| Ticker | Nama                  | Underwriter   | Harga IPO | Lot | Tanggal Beli |
+| ------ | --------------------- | ------------- | --------- | --- | ------------ |
+| BBRI   | Bank Rakyat Indonesia | CIMB Niaga    | 3850      | 10  | 2024-01-15   |
+| MEGA   | Bank Mega             | Goldman Sachs | 5500      | 5   | 2024-02-01   |
+| INDF   | Indofood              | BCA Sekuritas | 8000      | 8   | 2024-02-10   |
 
 ---
 
@@ -162,7 +164,8 @@ const SHEET_DATA = "Portfolio";
 const SHEET_USERS = "Users";
 
 function doGet(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_DATA);
+  const sheet =
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_DATA);
   const rows = sheet.getDataRange().getValues();
   const username = e.parameter.username || "";
   const data = [];
@@ -236,7 +239,7 @@ function handleAdd(ss, data) {
     "Hold",
     "",
     "",
-    data.username || ""
+    data.username || "",
   ]);
 
   return respond("success", "Data ditambahkan");
@@ -297,9 +300,9 @@ function formatRow(headers, row) {
 }
 
 function respond(status, data) {
-  return ContentService
-    .createTextOutput(JSON.stringify({ status: status, data: data }))
-    .setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(
+    JSON.stringify({ status: status, data: data }),
+  ).setMimeType(ContentService.MimeType.JSON);
 }
 ```
 
