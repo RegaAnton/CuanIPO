@@ -11,6 +11,7 @@ Aplikasi web untuk mengelola portfolio IPO dengan dashboard analytics, tracking 
 - 🏷️ **Status Tracking** - Tracking hold/sold otomatis
 - 🎨 **Dark Mode** - Theme toggle light/dark
 - 📱 **Responsive** - Mobile, tablet, desktop compatible
+- 📲 **PWA (Progressive Web App)** - Instal seperti aplikasi native, offline support
 
 ---
 
@@ -43,6 +44,8 @@ CuanIPO/
 ├── login.html              # Halaman login
 ├── register.html           # Halaman registrasi
 ├── style.css               # Styling custom
+├── manifest.json           # PWA manifest & config
+├── service-worker.js       # PWA service worker (offline support)
 ├── constants.js            # Config & konstanta
 ├── utils.js                # Utility functions
 ├── api.js                  # API management
@@ -305,6 +308,42 @@ function respond(status, data) {
   ).setMimeType(ContentService.MimeType.JSON);
 }
 ```
+
+---
+
+## 📲 PWA - Progressive Web App
+
+### Features PWA
+
+✅ **Installable** - Instal di home screen (mobile/desktop)
+✅ **Offline Support** - Akses data cached meski offline
+✅ **Background Sync** - Sinkronisasi data saat online kembali
+✅ **Fast Loading** - Cache strategy untuk performa optimal
+✅ **App Icon** - Ikon aplikasi di home screen
+✅ **Standalone Mode** - Tampil seperti aplikasi native
+
+### Cara Install PWA
+
+#### Di Mobile (Android):
+
+1. Buka aplikasi di Chrome/browser
+2. Klik **"⋮"** (menu) → **"Install app"** atau **"Add to Home screen"**
+3. Konfirmasi instalasi
+4. Aplikasi akan muncul di home screen
+
+#### Di Desktop (Windows/Mac):
+
+1. Buka aplikasi di Chrome
+2. Klik **"⊕"** icon di address bar → **"Install CuanIPO"**
+3. Aplikasi terbuka di window terpisah
+4. Shortcut tersedia di desktop atau taskbar
+
+#### Di iOS (Safari):
+
+1. Buka aplikasi di Safari
+2. Tap **"Share"** → **"Add to Home Screen"**
+3. Beri nama dan tap **"Add"**
+4. Aplikasi siap digunakan
 
 ---
 
