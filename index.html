@@ -7,16 +7,25 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Dashboard - CuanIPO</title>
-    
+
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#4f46e5" />
-    <meta name="description" content="Aplikasi web untuk mengelola portfolio IPO dengan tracking P&L dan analytics real-time" />
+    <meta
+      name="description"
+      content="Aplikasi web untuk mengelola portfolio IPO dengan tracking P&L dan analytics real-time"
+    />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="CuanIPO" />
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%234f46e5' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='72' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'>C</text><text x='50%' y='65%' font-size='36' fill='white' text-anchor='middle' dominant-baseline='central'>IPO</text></svg>" />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%234f46e5' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='72' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'>C</text><text x='50%' y='65%' font-size='36' fill='white' text-anchor='middle' dominant-baseline='central'>IPO</text></svg>"
+    />
     <link rel="manifest" href="manifest.json" />
-    
+
     <!-- Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -681,74 +690,79 @@
 
     <!-- Service Worker Registration for PWA -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
           navigator.serviceWorker
-            .register('service-worker.js')
+            .register("service-worker.js")
             .then((registration) => {
-              console.log('[PWA] Service Worker registered:', registration);
-              
+              console.log("[PWA] Service Worker registered:", registration);
+
               // Check for updates periodically
               setInterval(() => {
                 registration.update();
               }, 60000); // Check every minute
-              
+
               // Listen for updates
-              registration.addEventListener('updatefound', () => {
+              registration.addEventListener("updatefound", () => {
                 const newWorker = registration.installing;
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'activated') {
-                    console.log('[PWA] New Service Worker activated - Update available!');
-                    UI.showToast('Update tersedia! Refresh halaman untuk update.', 'info');
+                newWorker.addEventListener("statechange", () => {
+                  if (newWorker.state === "activated") {
+                    console.log(
+                      "[PWA] New Service Worker activated - Update available!",
+                    );
+                    UI.showToast(
+                      "Update tersedia! Refresh halaman untuk update.",
+                      "info",
+                    );
                   }
                 });
               });
             })
             .catch((error) => {
-              console.warn('[PWA] Service Worker registration failed:', error);
+              console.warn("[PWA] Service Worker registration failed:", error);
             });
         });
 
         // Handle controller change (new SW activated)
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          console.log('[PWA] New Service Worker taking control');
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          console.log("[PWA] New Service Worker taking control");
         });
       }
 
       // Add to Home Screen functionality
       let deferredPrompt;
-      window.addEventListener('beforeinstallprompt', (e) => {
+      window.addEventListener("beforeinstallprompt", (e) => {
         // Prevent the mini-infobar from appearing
         e.preventDefault();
         // Stash the event for later use
         deferredPrompt = e;
-        console.log('[PWA] beforeinstallprompt event captured');
-        
+        console.log("[PWA] beforeinstallprompt event captured");
+
         // Show install button jika ada
-        const installBtn = document.getElementById('installBtn');
+        const installBtn = document.getElementById("installBtn");
         if (installBtn) {
-          installBtn.style.display = 'block';
-          installBtn.addEventListener('click', async () => {
+          installBtn.style.display = "block";
+          installBtn.addEventListener("click", async () => {
             if (deferredPrompt) {
               deferredPrompt.prompt();
               const { outcome } = await deferredPrompt.userChoice;
               console.log(`[PWA] User responded to install prompt: ${outcome}`);
               deferredPrompt = null;
-              installBtn.style.display = 'none';
+              installBtn.style.display = "none";
             }
           });
         }
       });
 
-      window.addEventListener('appinstalled', () => {
-        console.log('[PWA] App installed!');
+      window.addEventListener("appinstalled", () => {
+        console.log("[PWA] App installed!");
         deferredPrompt = null;
-        UI.showToast('Aplikasi berhasil diinstal!', 'success');
+        UI.showToast("Aplikasi berhasil diinstal!", "success");
       });
 
       // Detect when PWA is launched
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('[PWA] App running in standalone mode');
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        console.log("[PWA] App running in standalone mode");
       }
     </script>
   </body>

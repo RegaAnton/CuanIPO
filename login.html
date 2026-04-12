@@ -7,15 +7,21 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Login - CuanIPO</title>
-    
+
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#4f46e5" />
-    <meta name="description" content="Aplikasi web untuk mengelola portfolio IPO dengan tracking P&L dan analytics real-time" />
+    <meta
+      name="description"
+      content="Aplikasi web untuk mengelola portfolio IPO dengan tracking P&L dan analytics real-time"
+    />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="CuanIPO" />
     <link rel="manifest" href="manifest.json" />
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = { darkMode: "class", theme: { extend: {} } };
@@ -117,15 +123,15 @@
 
     <!-- Service Worker Registration for PWA -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
           navigator.serviceWorker
-            .register('service-worker.js')
+            .register("service-worker.js")
             .then((registration) => {
-              console.log('[PWA] Service Worker registered:', registration);
+              console.log("[PWA] Service Worker registered:", registration);
             })
             .catch((error) => {
-              console.warn('[PWA] Service Worker registration failed:', error);
+              console.warn("[PWA] Service Worker registration failed:", error);
             });
         });
       }
