@@ -17,6 +17,12 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css" />
+    <!-- Application Scripts (Order matters!) -->
+    <script src="constants.js"></script>
+    <script src="utils.js"></script>
+    <script src="api.js"></script>
+    <script src="ui.js"></script>
+    <script src="charts.js"></script>
   </head>
   <body
     class="bg-slate-50 dark:bg-slate-900 font-sans antialiased text-slate-800 dark:text-slate-100 transition-colors duration-300 overflow-x-hidden w-full relative"
@@ -38,7 +44,7 @@
               <i class="fas fa-user-circle text-indigo-300"></i>
               <span id="displayUsername" class="font-bold"></span>
               <button
-                onclick="IPOApp.logout()"
+                onclick="App.logout()"
                 class="ml-2 text-rose-300 hover:text-rose-400"
                 title="Logout"
               >
@@ -47,7 +53,7 @@
             </div>
 
             <button
-              onclick="IPOApp.toggleTheme()"
+              onclick="App.toggleTheme()"
               id="themeToggle"
               class="p-2 rounded-full bg-indigo-700 dark:bg-indigo-950 hover:bg-indigo-800 transition-colors focus:outline-none w-9 h-9 flex items-center justify-center"
             >
@@ -88,28 +94,28 @@
           id="dateFilters"
         >
           <button
-            onclick="IPOApp.setFilter('1M')"
+            onclick="App.setFilter('1M')"
             id="filter-1M"
             class="flex-1 md:flex-none px-4 py-2 sm:py-1.5 text-xs sm:text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-800 transition-colors"
           >
             1 Bulan
           </button>
           <button
-            onclick="IPOApp.setFilter('3M')"
+            onclick="App.setFilter('3M')"
             id="filter-3M"
             class="flex-1 md:flex-none px-4 py-2 sm:py-1.5 text-xs sm:text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-800 transition-colors"
           >
             3 Bulan
           </button>
           <button
-            onclick="IPOApp.setFilter('YTD')"
+            onclick="App.setFilter('YTD')"
             id="filter-YTD"
             class="flex-1 md:flex-none px-4 py-2 sm:py-1.5 text-xs sm:text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-800 transition-colors"
           >
             YTD
           </button>
           <button
-            onclick="IPOApp.setFilter('ALL')"
+            onclick="App.setFilter('ALL')"
             id="filter-ALL"
             class="flex-1 md:flex-none px-4 py-2 sm:py-1.5 text-xs sm:text-sm font-bold rounded-md bg-white dark:bg-slate-600 text-slate-800 dark:text-white shadow-sm transition-colors"
           >
@@ -272,7 +278,7 @@
               </div>
               <select
                 id="sortSelect"
-                onchange="IPOApp.setSort(this.value)"
+                onchange="App.setSort(this.value)"
                 class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 p-2.5 shadow-sm font-semibold outline-none cursor-pointer"
               >
                 <option value="newest">Terbaru</option>
@@ -284,14 +290,14 @@
             </div>
 
             <button
-              onclick="IPOApp.fetchData()"
+              onclick="App.loadData()"
               class="flex-1 lg:flex-none flex justify-center items-center text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 text-xs sm:text-sm font-bold px-3 py-2.5 rounded-lg transition-colors border border-indigo-100 dark:border-indigo-800 shadow-sm md:shadow-none"
             >
               <i class="fas fa-sync-alt"></i>
             </button>
 
             <button
-              onclick="IPOApp.openFormModal()"
+              onclick="App.openFormModal()"
               class="flex-[2] lg:flex-none flex justify-center items-center bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-lg transition-colors shadow-sm whitespace-nowrap"
             >
               <i class="fas fa-plus mr-1.5"></i> Tambah IPO
@@ -374,7 +380,7 @@
           </h3>
           <button
             type="button"
-            onclick="IPOApp.closeFormModal()"
+            onclick="App.closeFormModal()"
             class="text-slate-400 hover:text-red-500 transition-colors bg-white dark:bg-slate-700 rounded-full p-1.5"
           >
             <i
@@ -474,7 +480,7 @@
                 >
                 <select
                   id="status_saham"
-                  onchange="IPOApp.toggleSellFields()"
+                  onchange="UI.toggleSellFields(this.value === 'Sold')"
                   class="block w-full rounded-lg border-slate-300 dark:border-slate-600 px-3 py-2.5 border bg-white dark:bg-slate-800 text-slate-800 dark:text-white font-semibold"
                 >
                   <option value="Hold">HOLD</option>
@@ -524,7 +530,7 @@
         >
           <button
             type="button"
-            onclick="IPOApp.closeFormModal()"
+            onclick="App.closeFormModal()"
             class="w-1/3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 py-2.5 rounded-lg hover:bg-slate-50 font-bold text-sm"
           >
             Batal
@@ -532,7 +538,7 @@
           <button
             type="button"
             id="btnSubmitForm"
-            onclick="IPOApp.handleSimpanIPO(event)"
+            onclick="App.handleSaveIPO(event)"
             class="w-2/3 bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-bold text-sm shadow-md active:scale-[0.98]"
           >
             <i class="fas fa-save mr-2"></i> Simpan Data
@@ -559,7 +565,7 @@
           </h3>
           <button
             type="button"
-            onclick="IPOApp.closeSellModal()"
+            onclick="App.closeSellModal()"
             class="text-slate-400 hover:text-red-500 bg-slate-50 dark:bg-slate-700 rounded-full p-1.5"
           >
             <i
@@ -597,7 +603,7 @@
           <div class="flex gap-3 mt-8 pt-2">
             <button
               type="button"
-              onclick="IPOApp.closeSellModal()"
+              onclick="App.closeSellModal()"
               class="w-1/2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 py-2.5 rounded-lg font-bold text-sm"
             >
               Batal
@@ -638,7 +644,7 @@
         <div class="flex gap-3">
           <button
             type="button"
-            onclick="IPOApp.closeConfirm()"
+            onclick="UI.closeConfirm()"
             class="w-1/2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 py-2.5 rounded-lg font-bold text-sm"
           >
             Batal
@@ -646,7 +652,7 @@
           <button
             type="button"
             id="btnConfirmAction"
-            onclick="IPOApp.executeConfirm()"
+            onclick="UI.executeConfirm()"
             class="w-1/2 bg-rose-600 text-white py-2.5 rounded-lg font-bold text-sm"
           >
             Ya, Hapus

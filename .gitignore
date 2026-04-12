@@ -1,0 +1,92 @@
+# Environment & Configuration
+.env
+.env.local
+.env.*.local
+config.local.js
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Node (jika menggunakan build tools di masa depan)
+node_modules/
+package-lock.json
+yarn.lock
+dist/
+build/
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.log
+*.pot
+*.mo
+
+# Testing
+coverage/
+.nyc_output
+
+# Secrets & API Keys
+secrets.json
+.secrets
+api-key.txt
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Local development
+local/
+debug/
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Build outputs
+dist/
+build/
+*.min.js
+*.min.css
+
+# Node modules
+node_modules/
+package-lock.json
+yarn.lock
+
+# Logging
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Project specific
+.credentials
+config.local.js

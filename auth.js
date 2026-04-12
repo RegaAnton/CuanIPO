@@ -1,150 +1,148 @@
-const AuthApp = {
-  // PENTING: GANTI DENGAN URL API APPS SCRIPT KAMU
-  API_URL:
-    "https://script.google.com/macros/s/AKfycbwscq9g3lC8OsdBlQFtmSm48cL65w-WwV7uAIYjdRU5s_rHyXLRRR-vCFK2dhnbXZ5GDQ/exec",
+/**
+ * AUTH.JS - Authentication module
+ * Handles login and registration
+ * 
+ * Dependencies:
+ * - constants.js  (Configuration and constants)
+ * - utils.js      (Utility functions including hashPassword)
+ * - ui.js         (DOM manipulation including showToast)
+ * - api.js        (API calls management)
+ */
 
+const AuthApp = {
+  /**
+   * Initialize authentication page
+   */
   init: () => {
-    // Jika sudah login, paksa pindah ke index.html
-    if (localStorage.getItem("cuanIpoUser")) {
+    AuthApp.checkRedirect();
+    AuthApp.bindEvents();
+  },
+
+  /**
+   * Check if user is already logged in - redirect to index if true
+   */
+  checkRedirect: () => {
+    if (localStorage.getItem(CONFIG.STORAGE_KEYS.USER)) {
       window.location.href = "index.html";
     }
+  },
 
-    const loginForm = document.getElementById("loginForm");
-    if (loginForm) loginForm.addEventListener("submit", AuthApp.handleLogin);
+  /**
+   * Bind event listeners for forms
+   */
+  bindEvents: () => {
+    const loginForm = document.getElementById(CONFIG.SELECTORS.ipoForm) ||
+                      document.getElementById("loginForm");
+    if (loginForm) {
+      loginForm.addEventListener("submit", AuthApp.handleLogin);
+    }
 
-    const registerForm = document.getElementById("registerForm");
-    if (registerForm)
+    const registerForm = document.getElementById(CONFIG.SELECTORS.sellForm) ||
+                        document.getElementById("registerForm");
+    if (registerForm) {
       registerForm.addEventListener("submit", AuthApp.handleRegister);
+    }
   },
 
-  // Fungsi untuk mengenkripsi (Hashing SHA-256) password
-  hashPassword: async (password) => {
-    const msgBuffer = new TextEncoder().encode(password);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    return hashHex;
-  },
-
+  /**
+   * Handle login form submission
+   * @param {Event} e - Form submit event
+   */
   handleLogin: async (e) => {
     e.preventDefault();
-    const username = document.getElementById("authUsername").value.trim();
-    const rawPassword = document.getElementById("authPassword").value;
-    const btn = document.getElementById("btnLoginSubmit");
 
-    if (!username || !rawPassword)
-      return AuthApp.showToast("Username dan Password wajib diisi!", "error");
+    const usernameEl = document.getElementById("authUsername");
+    const passwordEl = document.getElementById("authPassword");
+    const btnLogin = document.getElementById("btnLoginSubmit");
 
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...`;
-    btn.classList.add("opacity-70", "cursor-not-allowed");
+    if (!usernameEl || !passwordEl || !btnLogin) return;
+
+    const username = usernameEl.value.trim();
+    const rawPassword = passwordEl.value;
+
+    // Validation
+    if (!username || !rawPassword) {
+      UI.showToast(CONFIG.MESSAGES.DEFAULT.requiredError, "error");
+      return;
+    }
+
+    // Set loading state
+    UI.setButtonLoading(btnLogin, true, "Memproses...");
 
     try {
-      // Enkripsi password sebelum dikirim ke Google Sheets
-      const hashedPassword = await AuthApp.hashPassword(rawPassword);
+      // Hash password
+      const hashedPassword = await Utils.hashPassword(rawPassword);
 
-      const response = await fetch(AuthApp.API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({
-          action: "login",
-          username: username,
-          password: hashedPassword,
-        }),
-      });
-      const result = await response.json();
+      // Call API
+      const result = await API.login(username, hashedPassword);
 
       if (result.status === "success") {
-        AuthApp.showToast("Login Berhasil! Mengalihkan...", "success");
-        localStorage.setItem("cuanIpoUser", username);
+        UI.showToast(CONFIG.MESSAGES.AUTH.loginSuccess, "success");
+        localStorage.setItem(CONFIG.STORAGE_KEYS.USER, username);
         setTimeout(() => {
           window.location.href = "index.html";
         }, 1000);
       } else {
-        AuthApp.showToast(result.message, "error");
+        UI.showToast(result.message || CONFIG.MESSAGES.AUTH.loginError, "error");
       }
     } catch (error) {
-      AuthApp.showToast("Gagal terhubung ke server.", "error");
+      console.error("Login error:", error);
+      UI.showToast(CONFIG.MESSAGES.AUTH.loginError, "error");
     } finally {
-      btn.disabled = false;
-      btn.innerHTML = `Login`;
-      btn.classList.remove("opacity-70", "cursor-not-allowed");
+      // Reset loading state
+      UI.setButtonLoading(btnLogin, false, "Login");
     }
   },
 
+  /**
+   * Handle register form submission
+   * @param {Event} e - Form submit event
+   */
   handleRegister: async (e) => {
     e.preventDefault();
-    const username = document.getElementById("regUsername").value.trim();
-    const rawPassword = document.getElementById("regPassword").value;
-    const btn = document.getElementById("btnRegisterSubmit");
 
-    if (!username || !rawPassword)
-      return AuthApp.showToast("Username dan Password wajib diisi!", "error");
+    const usernameEl = document.getElementById("regUsername");
+    const passwordEl = document.getElementById("regPassword");
+    const btnRegister = document.getElementById("btnRegisterSubmit");
 
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Mendaftar...`;
-    btn.classList.add("opacity-70", "cursor-not-allowed");
+    if (!usernameEl || !passwordEl || !btnRegister) return;
+
+    const username = usernameEl.value.trim();
+    const rawPassword = passwordEl.value;
+
+    // Validation
+    if (!username || !rawPassword) {
+      UI.showToast(CONFIG.MESSAGES.DEFAULT.requiredError, "error");
+      return;
+    }
+
+    // Set loading state
+    UI.setButtonLoading(btnRegister, true, "Mendaftar...");
 
     try {
-      // Enkripsi password sebelum disimpan ke Google Sheets
-      const hashedPassword = await AuthApp.hashPassword(rawPassword);
+      // Hash password
+      const hashedPassword = await Utils.hashPassword(rawPassword);
 
-      const response = await fetch(AuthApp.API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({
-          action: "register",
-          username: username,
-          password: hashedPassword,
-        }),
-      });
-      const result = await response.json();
+      // Call API
+      const result = await API.register(username, hashedPassword);
 
       if (result.status === "success") {
-        AuthApp.showToast("Registrasi Berhasil! Silakan Login.", "success");
+        UI.showToast(CONFIG.MESSAGES.AUTH.registerSuccess, "success");
         setTimeout(() => {
           window.location.href = "login.html";
         }, 1500);
       } else {
-        AuthApp.showToast(result.message, "error");
+        UI.showToast(result.message || CONFIG.MESSAGES.AUTH.registerError, "error");
       }
     } catch (error) {
-      AuthApp.showToast("Gagal terhubung ke server.", "error");
+      console.error("Register error:", error);
+      UI.showToast(CONFIG.MESSAGES.AUTH.registerError, "error");
     } finally {
-      btn.disabled = false;
-      btn.innerHTML = `Daftar Sekarang`;
-      btn.classList.remove("opacity-70", "cursor-not-allowed");
+      // Reset loading state
+      UI.setButtonLoading(btnRegister, false, "Daftar Sekarang");
     }
-  },
-
-  showToast: (message, type = "info") => {
-    const container = document.getElementById("toast-container");
-    if (!container) return;
-    const toast = document.createElement("div");
-    const bgColor =
-      type === "success"
-        ? "bg-emerald-600"
-        : type === "error"
-          ? "bg-rose-600"
-          : "bg-indigo-600";
-    const icon =
-      type === "success"
-        ? "fa-check-circle"
-        : type === "error"
-          ? "fa-exclamation-circle"
-          : "fa-info-circle";
-
-    toast.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 transform transition-all duration-300 translate-y-10 opacity-0 pointer-events-auto`;
-    toast.innerHTML = `<i class="fas ${icon} text-lg"></i> <span class="text-sm font-semibold">${message}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => toast.classList.remove("translate-y-10", "opacity-0"), 10);
-    setTimeout(() => {
-      toast.classList.add("translate-y-10", "opacity-0");
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
   },
 };
 
+// ===== INITIALIZE AUTH PAGE =====
 document.addEventListener("DOMContentLoaded", AuthApp.init);
