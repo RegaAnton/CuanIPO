@@ -375,4 +375,4 @@ Butuh bantuan? Buka issue di GitHub atau hubungi repository owner.
 
 ---
 
-**Happy tracking! 🚀**
+**Happy Cuan! 🚀**
